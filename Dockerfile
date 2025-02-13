@@ -58,6 +58,9 @@ ARG KONG_PG_USER
 ENV KONG_PG_USER $PGUSER
 # RUN echo $KONG_PG_USER
 
+# Añade la variable de entorno para la base de datos 'railway'
+ENV KONG_PG_DATABASE="railway"
+
 # Setup kong.yml
 COPY ./kong.yml /kong/declarative/kong.yml
 ARG KONG_DECLARATIVE_CONFIG="/kong/declarative/kong.yml"
@@ -66,7 +69,6 @@ ENV KONG_DECLARATIVE_CONFIG $KONG_DECLARATIVE_CONFIG
 # Setup kong.conf custom config
 COPY kong.conf /etc/kong/kong.conf
 RUN kong check /etc/kong/kong.conf
-
 
 # download kong-oidc and jwt plugin
 USER root
@@ -88,7 +90,7 @@ RUN luarocks make kong-plugin-jwt-keycloak-${JWT_PLUGIN_VERSION}.rockspec
 WORKDIR /
 USER kong
 
-# Run kong migrations database 'kong' in postgres should already exist
+# Run kong migrations database 'railway' in postgres should already exist
 RUN kong migrations bootstrap
 RUN kong migrations finish
 RUN kong migrations up
