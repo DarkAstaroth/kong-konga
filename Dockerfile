@@ -13,7 +13,9 @@ ENV KONG_PROXY_ACCESS_LOG=/dev/stdout
 ENV KONG_ADMIN_ACCESS_LOG=/dev/stdout
 ENV KONG_PROXY_ERROR_LOG=/dev/stderr
 ENV KONG_ADMIN_ERROR_LOG=/dev/stderr
-ENV KONG_PLUGINS="bundled,oidc"
+
+# Agrega el plugin 'mirror-req-traffic' a la lista de plugins
+ENV KONG_PLUGINS="bundled,oidc,mirror-req-traffic"
 
 # kong manager gui setup
 ARG KONG_ADMIN_GUI_URL="http://127.0.0.1:8002/manager"
@@ -69,6 +71,9 @@ ENV KONG_DECLARATIVE_CONFIG $KONG_DECLARATIVE_CONFIG
 # Setup kong.conf custom config
 COPY kong.conf /etc/kong/kong.conf
 RUN kong check /etc/kong/kong.conf
+
+# Copia el plugin personalizado al contenedor
+COPY ./kong/plugins/mirror-req-traffic /usr/local/share/lua/5.1/kong/plugins/mirror-req-traffic
 
 # download kong-oidc and jwt plugin
 USER root
